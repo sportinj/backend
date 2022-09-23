@@ -4,7 +4,7 @@ def main():
     В ней надо заменить pass на ваш код
     """
 
-print('hello, world')
+    print('hello, world')
 
 
 if __name__ == "__main__":
