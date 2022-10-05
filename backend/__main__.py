@@ -1,7 +1,7 @@
 from asyncio.log import logger
 import flask
 import logging
-from backend.teams import app
+from backend.teams.views import app
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 

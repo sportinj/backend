@@ -1,3 +1,5 @@
 flask==2.2.2
+pydantic==1.10.2
+
 
 
