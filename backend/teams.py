@@ -58,16 +58,24 @@ def add_team():
 
 @app.get('/api/teams/')
 def get_teams():
-    return storage.get_teams(), 200
+    teams = storage.get_teams()
+    return [team.dict() for team in teams], 200
 
 @app.get('/api/teams/<int:uid>')
 def get_team_by_id(uid):
-    return storage.get_team_by_id(uid), 200
+    team = storage.get_team_by_id(uid)
+    return team.dict(), 200
+
 
 @app.put('/api/teams/<int:uid>')
 def update_by_id(uid):
-    team = request.json
-    return storage.update_by_id(uid, team), 200
+    payload = request.json
+    try:
+        team = Team(**payload)
+    except ValidationError as err:
+        return {"error": str(err)}, 400
+    team = storage.update_by_id(uid, team)
+    return team.dict(), 200
 
 
 @app.delete('/api/teams/<int:uid>')
