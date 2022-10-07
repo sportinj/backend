@@ -2,8 +2,18 @@ from flask import Flask, request
 from pydantic import ValidationError
 from backend.teams.storages import LocalStorage
 from backend.teams.schemas import Team
+from backend.errors import AppError
 
 app = Flask(__name__)
+
+def handle_app_error(e: AppError):
+    return {'error': str(e)}, e.code
+
+def handle_validation_error(e: ValidationError):
+    return {'error': str(e)}, 400
+
+app.register_error_handler(AppError, handle_app_error)
+app.register_error_handler(ValidationError, handle_validation_error)
 
 storage = LocalStorage()
 
