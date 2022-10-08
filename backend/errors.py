@@ -1,4 +1,3 @@
-from pydantic import ValidationError
 
 class AppError(Exception):
     code = 500
