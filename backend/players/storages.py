@@ -1,5 +1,6 @@
-from backend.players.schemas import Player
 from backend.errors import NotFoundError
+from backend.players.schemas import Player
+
 
 class LocalStorage:
     def __init__(self):
@@ -11,11 +12,11 @@ class LocalStorage:
         player.uid = self.last_uid
         self.players[self.last_uid] = player
         return player
-    
+
     def get_all(self) -> list[Player]:
         return list(self.players.values())
-    
-    def get_by_id(self, uid:int) -> Player:
+
+    def get_by_id(self, uid: int) -> Player:
         if uid not in self.players:
             raise NotFoundError('players', uid)
 
@@ -27,7 +28,7 @@ class LocalStorage:
 
         self.players[uid] = player
         return player
-    
+
     def delete(self, uid: int) -> None:
         if uid not in self.players:
             raise NotFoundError('players', uid)
