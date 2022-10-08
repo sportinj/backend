@@ -1,42 +1,28 @@
-from flask import Flask, request
-from pydantic import ValidationError
+from flask import Blueprint, request
 
 from backend.errors import AppError
 from backend.players.schemas import Player
 from backend.players.storages import LocalStorage
 
-app = Flask(__name__)
+player_view = Blueprint('player', __name__)
 
-
-def handle_app_error(error: AppError):
-    return {'error': str(error)}, error.code
-
-
-def handle_validation_error(error: ValidationError):
-    return {'error': str(error)}, 422
-
-
-app.register_error_handler(AppError, handle_app_error)
-
-
-app.register_error_handler(ValidationError, handle_validation_error)
 
 storage = LocalStorage()
 
 
-@app.get('/api/players/')
+@player_view.get('/')
 def get_all():
     players = storage.get_all()
     return [player.dict() for player in players], 200
 
 
-@app.get('/api/players/<int:uid>')
+@player_view.get('/<int:uid>')
 def get_player_by_id(uid):
     player = storage.get_by_id(uid)
     return player.dict(), 200
 
 
-@app.post('/api/players/')
+@player_view.post('/')
 def add_player():
     payload = request.json
 
@@ -49,7 +35,7 @@ def add_player():
     return player.dict(), 201
 
 
-@app.put('/api/players/<int:uid>')
+@player_view.put('/<int:uid>')
 def update_by_id(uid):
     payload = request.json
 
@@ -61,7 +47,7 @@ def update_by_id(uid):
     return player.dict(), 200
 
 
-@app.delete('/api/players/<int:uid>')
+@player_view.delete('/<int:uid>')
 def delete_player(uid):
     storage.delete(uid)
     return {}, 204
