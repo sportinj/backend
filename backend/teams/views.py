@@ -1,28 +1,16 @@
-from flask import Flask, request
+from flask import Blueprint, request
 from pydantic import ValidationError
 
 from backend.errors import AppError
 from backend.teams.schemas import Team
 from backend.teams.storages import LocalStorage
 
-app = Flask(__name__)
-
-
-def handle_app_error(error: AppError):
-    return {'error': str(error)}, error.code
-
-
-def handle_validation_error(error: ValidationError):
-    return {'error': str(error)}, 400
-
-
-app.register_error_handler(AppError, handle_app_error)
-app.register_error_handler(ValidationError, handle_validation_error)
+team_view = Blueprint('teams', __name__)
 
 storage = LocalStorage()
 
 
-@app.post('/api/teams/')
+@team_view.post('/')
 def add_team():
     payload = request.json
     if not payload:
@@ -38,19 +26,19 @@ def add_team():
     return team.dict(), 201
 
 
-@app.get('/api/teams/')
+@team_view.get('/')
 def get_teams():
     teams = storage.get_teams()
     return [team.dict() for team in teams], 200
 
 
-@app.get('/api/teams/<int:uid>')
+@team_view.get('/<int:uid>')
 def get_team_by_id(uid):
     team = storage.get_team_by_id(uid)
     return team.dict(), 200
 
 
-@app.put('/api/teams/<int:uid>')
+@team_view.put('/<int:uid>')
 def update(uid):
     payload = request.json
     if not payload:
@@ -61,7 +49,7 @@ def update(uid):
     return team.dict(), 200
 
 
-@app.delete('/api/teams/<int:uid>')
+@team_view.delete('/<int:uid>')
 def delete_team(uid):
     storage.delete(uid)
     return {}, 204
