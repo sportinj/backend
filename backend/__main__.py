@@ -1,7 +1,6 @@
 from asyncio.log import logger
 import logging
 from backend.players.views import app
-
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 

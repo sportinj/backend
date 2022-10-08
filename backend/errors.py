@@ -1,3 +1,4 @@
+
 class AppError(Exception):
     code = 500
     def __init__(self, reason: str) -> None:
