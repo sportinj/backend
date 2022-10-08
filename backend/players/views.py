@@ -10,7 +10,7 @@ def handle_app_error(e: AppError):
     return {'error': str(e)}, e.code
 
 def handle_validation_error(e: ValidationError):
-    return {'error': str(e)}, 422   
+    return {'error': str(e)}, 422
 
 app.register_error_handler(AppError, handle_app_error)
 app.register_error_handler(ValidationError, handle_validation_error)
@@ -30,6 +30,10 @@ def get_player_by_id(uid):
 @app.post('/api/players/')
 def add_player():
     payload = request.json
+
+    if not payload:
+        raise AppError('empty payload')
+
     payload['uid'] = -1
     player = Player(**payload)
     player = storage.add(player)
@@ -38,6 +42,10 @@ def add_player():
 @app.put('/api/players/<int:uid>')
 def update_by_id(uid):
     payload = request.json
+
+    if not payload:
+        raise AppError('empty payload')
+
     player = Player(**payload)
     player = storage.update(uid, player)
     return player.dict(), 200

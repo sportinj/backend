@@ -20,6 +20,9 @@ storage = LocalStorage()
 @app.post('/api/teams/')
 def add_team():
     payload = request.json
+    if not payload:
+        raise AppError('empty payload')
+
     payload["uid"] = -1
     try:
         team = Team(**payload)
@@ -43,10 +46,14 @@ def get_team_by_id(uid):
 @app.put('/api/teams/<int:uid>')
 def update(uid):
     payload = request.json
+    if not payload:
+        raise AppError('empty payload')
+
     try:
         team = Team(**payload)
     except ValidationError as err:
         return {"error": str(err)}, 400
+
     team = storage.update(uid, team)
     return team.dict(), 200
 
