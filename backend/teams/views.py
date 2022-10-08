@@ -1,21 +1,26 @@
 from flask import Flask, request
 from pydantic import ValidationError
-from backend.teams.storages import LocalStorage
-from backend.teams.schemas import Team
+
 from backend.errors import AppError
+from backend.teams.schemas import Team
+from backend.teams.storages import LocalStorage
 
 app = Flask(__name__)
 
-def handle_app_error(e: AppError):
-    return {'error': str(e)}, e.code
 
-def handle_validation_error(e: ValidationError):
-    return {'error': str(e)}, 400
+def handle_app_error(error: AppError):
+    return {'error': str(error)}, error.code
+
+
+def handle_validation_error(error: ValidationError):
+    return {'error': str(error)}, 400
+
 
 app.register_error_handler(AppError, handle_app_error)
 app.register_error_handler(ValidationError, handle_validation_error)
 
 storage = LocalStorage()
+
 
 @app.post('/api/teams/')
 def add_team():
@@ -23,19 +28,21 @@ def add_team():
     if not payload:
         raise AppError('empty payload')
 
-    payload["uid"] = -1
+    payload['uid'] = -1
     try:
         team = Team(**payload)
     except ValidationError as err:
-        return {"error": str(err)}, 400
+        return {'error': str(err)}, 400
 
     team = storage.add(team)
     return team.dict(), 201
+
 
 @app.get('/api/teams/')
 def get_teams():
     teams = storage.get_teams()
     return [team.dict() for team in teams], 200
+
 
 @app.get('/api/teams/<int:uid>')
 def get_team_by_id(uid):
@@ -49,11 +56,7 @@ def update(uid):
     if not payload:
         raise AppError('empty payload')
 
-    try:
-        team = Team(**payload)
-    except ValidationError as err:
-        return {"error": str(err)}, 400
-
+    team = Team(**payload)
     team = storage.update(uid, team)
     return team.dict(), 200
 
@@ -62,4 +65,3 @@ def update(uid):
 def delete_team(uid):
     storage.delete(uid)
     return {}, 204
-
