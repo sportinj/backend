@@ -3,11 +3,11 @@ from pydantic import ValidationError
 
 from backend.errors import AppError
 from backend.teams.schemas import Team
-from backend.teams.storages import LocalStorage
+from backend.teams.storages import OnlineStorage
 
 team_view = Blueprint('teams', __name__)
 
-storage = LocalStorage()
+storage = OnlineStorage()
 
 
 @team_view.post('/')
