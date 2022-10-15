@@ -1,36 +1,52 @@
+from backend.database import db_session
 from backend.errors import NotFoundError
-from backend.teams.schemas import Team
+from backend.models import Team
+from backend.teams.schemas import Team as TeamSchema
 
 
-class LocalStorage:
-    def __init__(self):
-        self.teams: dict[int, Team] = {}
-        self.last_uid = 0
+class OnlineStorage():
+    def add(self, team: TeamSchema) -> TeamSchema:
+        entity = Team(name=team.name, description=team.description)
 
-    def add(self, team: Team) -> Team:
-        self.last_uid += 1
-        team.uid = self.last_uid
-        self.teams[self.last_uid] = team
-        return team
+        db_session.add(entity)
+        db_session.commit()
 
-    def get_teams(self) -> list[Team]:
-        return list(self.teams.values())
+        return TeamSchema(uid=entity.uid, name=entity.name, description=entity.description)
 
-    def get_team_by_id(self, uid: int) -> Team:
-        if uid not in self.teams:
+    def update(self, uid: int, team: TeamSchema) -> TeamSchema:
+        entity = Team.query.get(uid)
+
+        if not entity:
             raise NotFoundError('teams', uid)
 
-        return self.teams[uid]
+        entity.name = team.name
+        entity.description = team.description
 
-    def update(self, uid: int, team: Team) -> Team:
-        if uid not in self.teams:
-            raise NotFoundError('teams', uid)
+        db_session.commit()
 
-        self.teams[uid] = team
-        return team
+        return TeamSchema(uid=entity.uid, name=entity.name, description=entity.description)
 
     def delete(self, uid: int) -> None:
-        if uid not in self.teams:
+        entity = Team.query.get(uid)
+
+        if not entity:
             raise NotFoundError('teams', uid)
 
-        self.teams.pop(uid)
+        db_session.delete(entity)
+        db_session.commit()
+
+    def get_by_id(self, uid: int) -> TeamSchema:
+        entity = Team.query.get(uid)
+
+        if not entity:
+            raise NotFoundError('teams', uid)
+
+        return TeamSchema(uid=entity.uid, name=entity.name, description=entity.description)
+
+    def get_all(self) -> list[TeamSchema]:
+        entities = Team.query.all()
+
+        return [
+            TeamSchema(uid=entity.uid, name=entity.name, description=entity.description)
+            for entity in entities
+        ]
