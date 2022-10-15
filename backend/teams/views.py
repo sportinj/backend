@@ -17,24 +17,23 @@ def add_team():
         raise AppError('empty payload')
 
     payload['uid'] = -1
-    try:
-        team = Team(**payload)
-    except ValidationError as err:
-        return {'error': str(err)}, 400
+
+    team = Team(**payload)
 
     team = storage.add(team)
     return team.dict(), 201
 
 
-@team_view.get('/')
-def get_teams():
-    teams = storage.get_teams()
-    return [team.dict() for team in teams], 200
+@team_view.get('/<int:uid>')
+def get_by_id(uid):
+    team = storage.get_by_id(uid)
+
+    return team.dict(), 200
 
 
 @team_view.get('/<int:uid>')
 def get_team_by_id(uid):
-    team = storage.get_team_by_id(uid)
+    team = storage.get_by_id(uid)
     return team.dict(), 200
 
 
