@@ -6,12 +6,12 @@ from backend.errors import NotFoundError
 
 class OnlineStorage():
     def add(self, team: TeamSchema) -> TeamSchema:
-        entity = Team(name=team.name)
+        entity = Team(name=team.name, description=team.description)
 
         db_session.add(entity)
         db_session.commit()
 
-        return TeamSchema(uid=entity.uid, name=entity.name)
+        return TeamSchema(uid=entity.uid, name=entity.name, description=entity.description)
 
     def update(self, uid: int, team: TeamSchema) -> TeamSchema:
         entity = Team.query.get(uid)
@@ -20,10 +20,11 @@ class OnlineStorage():
             raise NotFoundError('teams', uid)
 
         entity.name = team.name
+        entity.description = team.description
 
         db_session.commit()
 
-        return TeamSchema(uid=entity.uid, name=entity.name)
+        return TeamSchema(uid=entity.uid, name=entity.name, description=entity.description)
 
     def delete(self, uid: int) -> None:
         entity = Team.query.get(uid)
@@ -40,14 +41,14 @@ class OnlineStorage():
         if not entity:
             raise NotFoundError('teams', uid)
 
-        return TeamSchema(uid=entity.uid, name=entity.name)
+        return TeamSchema(uid=entity.uid, name=entity.name, description=entity.description)
 
     def get_all(self) -> list[TeamSchema]:
         entity = Team.query.all()
         all_teams = []
 
         for team in entity:
-            poi = TeamSchema(uid=team.uid, name=team.name)
+            poi = TeamSchema(uid=entity.uid, name=entity.name, description=entity.description)
             all_teams.append(poi)
 
         return all_teams
