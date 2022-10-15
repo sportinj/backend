@@ -2,12 +2,12 @@ from flask import Blueprint, request
 
 from backend.errors import AppError
 from backend.players.schemas import Player
-from backend.players.storages import LocalStorage
+from backend.players.storages import OnlineStorage
 
 player_view = Blueprint('player', __name__)
 
 
-storage = LocalStorage()
+storage = OnlineStorage()
 
 
 @player_view.get('/')
