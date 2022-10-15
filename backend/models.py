@@ -19,6 +19,4 @@ class Team(Base):
 
 
 if __name__ == '__main__':
-    print('Try to create')
     Base.metadata.create_all(bind=engine)
-    print('Created')

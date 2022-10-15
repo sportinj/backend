@@ -1,7 +1,7 @@
 from backend.database import db_session
+from backend.errors import NotFoundError
 from backend.models import Team
 from backend.teams.schemas import Team as TeamSchema
-from backend.errors import NotFoundError
 
 
 class OnlineStorage():
@@ -44,11 +44,9 @@ class OnlineStorage():
         return TeamSchema(uid=entity.uid, name=entity.name, description=entity.description)
 
     def get_all(self) -> list[TeamSchema]:
-        entity = Team.query.all()
-        all_teams = []
+        entities = Team.query.all()
 
-        for team in entity:
-            poi = TeamSchema(uid=entity.uid, name=entity.name, description=entity.description)
-            all_teams.append(poi)
-
-        return all_teams
+        return [
+            TeamSchema(uid=entity.uid, name=entity.name, description=entity.description)
+            for entity in entities
+        ]

@@ -1,4 +1,5 @@
 from flask import Blueprint, request
+from itsdangerous import TimestampSigner
 from pydantic import ValidationError
 
 from backend.errors import AppError
@@ -24,11 +25,11 @@ def add_team():
     return team.dict(), 201
 
 
-@team_view.get('/<int:uid>')
-def get_by_id(uid):
-    team = storage.get_by_id(uid)
+@team_view.get('/')
+def get_all():
+    teams = storage.get_all()
 
-    return team.dict(), 200
+    return [team.dict() for team in teams], 200
 
 
 @team_view.get('/<int:uid>')
