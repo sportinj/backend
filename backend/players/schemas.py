@@ -5,3 +5,4 @@ class Player(BaseModel):
     uid: int
     name: str
     description: str
+    team_id: int
