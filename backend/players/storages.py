@@ -86,3 +86,25 @@ class OnlineStorage:
             all_players.append(poi)
 
         return all_players
+
+    def get_for_team(self, uid: int) -> list[PlayerSchema]:
+        team = Team.query.get(uid)
+
+        if not team:
+            raise NotFoundError('teams', uid)
+
+        entities = team.players
+
+        all_players = []
+
+        for player in entities:
+            poi = PlayerSchema(
+                uid=player.uid,
+                name=player.name,
+                description=player.description,
+                team_id=player.team_id
+            )
+
+            all_players.append(poi)
+
+        return all_players
