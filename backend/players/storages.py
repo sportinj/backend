@@ -13,9 +13,8 @@ class OnlineStorage:
         entity = Player(
             name=player.name,
             description=player.description,
-            team_id=player.team_id
+            team_id=player.team_id,
         )
-        
         try:
             db_session.add(entity)
             db_session.commit()
@@ -26,7 +25,7 @@ class OnlineStorage:
             uid=entity.uid,
             name=entity.name,
             description=player.description,
-            team_id=player.team_id
+            team_id=player.team_id,
         )
 
     def update(self, uid: int, player: PlayerSchema) -> PlayerSchema:
@@ -44,7 +43,7 @@ class OnlineStorage:
             uid=entity.uid,
             name=entity.name,
             description=player.description,
-            team_id=player.team_id
+            team_id=player.team_id,
         )
 
     def delete(self, uid: int) -> None:
@@ -56,7 +55,6 @@ class OnlineStorage:
         db_session.delete(entity)
         db_session.commit()
 
-
     def get_by_id(self, uid: int) -> PlayerSchema:
         entity = Player.query.get(uid)
 
@@ -67,7 +65,7 @@ class OnlineStorage:
             uid=entity.uid,
             name=entity.name,
             description=entity.description,
-            team_id=entity.team_id
+            team_id=entity.team_id,
         )
 
     def get_all(self) -> list[PlayerSchema]:
@@ -79,7 +77,7 @@ class OnlineStorage:
                 uid=player.uid,
                 name=player.name,
                 description=player.description,
-                team_id=player.team_id
+                team_id=player.team_id,
             )
 
             all_players.append(poi)
@@ -101,7 +99,7 @@ class OnlineStorage:
                 uid=player.uid,
                 name=player.name,
                 description=player.description,
-                team_id=player.team_id
+                team_id=player.team_id,
             )
 
             all_players.append(poi)
@@ -109,10 +107,9 @@ class OnlineStorage:
         return all_players
 
     def find_for_team(self, uid: int, name: str) -> list[PlayerSchema]:
-        search = '%{}%'.format(name)
         entities = Player.query.filter(
             Player.team_id == uid,
-            Player.name.ilike(search),
+            Player.name == name,
         ).all()
 
         target_players = []
@@ -125,7 +122,7 @@ class OnlineStorage:
                 uid=entity.uid,
                 name=entity.name,
                 description=entity.description,
-                team_id=entity.team_id
+                team_id=entity.team_id,
             )
 
             target_players.append(player)

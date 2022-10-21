@@ -42,7 +42,7 @@ def update_by_id(uid):
     if not payload:
         raise AppError('empty payload')
 
-    payload['uid'] =uid
+    payload['uid'] = uid
     player = Player(**payload)
     player = storage.update(uid, player)
     return player.dict(), 200

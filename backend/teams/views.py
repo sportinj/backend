@@ -1,6 +1,4 @@
 from flask import Blueprint, request
-from itsdangerous import TimestampSigner
-from pydantic import ValidationError
 
 from backend.errors import AppError
 from backend.players.storages import OnlineStorage as PlayerStorage
@@ -34,8 +32,6 @@ def get_all():
     return [team.dict() for team in teams], 200
 
 
-
-
 @team_view.get('/<int:uid>')
 def get_team_by_id(uid):
     team = storage.get_by_id(uid)
@@ -57,6 +53,7 @@ def update(uid):
 def delete_team(uid):
     storage.delete(uid)
     return {}, 204
+
 
 @team_view.get('/<int:uid>/players/')
 def get_all_players(uid, name=''):

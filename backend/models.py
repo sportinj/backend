@@ -9,7 +9,7 @@ class Player(Base):
 
     uid = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
-    description = Column(String)
+    description = Column(String, nullable=False)
     team_id = Column(Integer, ForeignKey('teams.uid'), nullable=False)
 
 
