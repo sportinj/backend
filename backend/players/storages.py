@@ -2,8 +2,7 @@ from sqlalchemy.exc import IntegrityError
 
 from backend.database import db_session
 from backend.errors import ConflictError, NotFoundError
-from backend.errors import NotFoundError
-from backend.models import Team, Player
+from backend.models import Player, Team
 from backend.players.schemas import Player as PlayerSchema
 
 
@@ -108,3 +107,27 @@ class OnlineStorage:
             all_players.append(poi)
 
         return all_players
+
+    def find_for_team(self, uid: int, name: str) -> list[PlayerSchema]:
+        search = '%{}%'.format(name)
+        entities = Player.query.filter(
+            Player.team_id == uid,
+            Player.name.ilike(search),
+        ).all()
+
+        target_players = []
+
+        if not entities:
+            raise NotFoundError(name, uid)
+
+        for entity in entities:
+            player = PlayerSchema(
+                uid=entity.uid,
+                name=entity.name,
+                description=entity.description,
+                team_id=entity.team_id
+            )
+
+            target_players.append(player)
+
+        return target_players
