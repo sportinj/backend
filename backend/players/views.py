@@ -17,7 +17,7 @@ def get_all():
 
 
 @player_view.get('/<int:uid>')
-def get_player_by_id(uid):
+def get_by_id(uid):
     player = storage.get_by_id(uid)
     return player.dict(), 200
 
@@ -42,6 +42,7 @@ def update_by_id(uid):
     if not payload:
         raise AppError('empty payload')
 
+    payload['uid'] = uid
     player = Player(**payload)
     player = storage.update(uid, player)
     return player.dict(), 200
