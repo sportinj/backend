@@ -67,12 +67,12 @@ class OnlineStorage:
         return PlayerSchema(
             uid=entity.uid,
             name=entity.name,
-            description=player.description,
-            team_id=player.team_id
+            description=entity.description,
+            team_id=entity.team_id
         )
 
     def get_all(self) -> list[PlayerSchema]:
-        entities = Player.query.get(uid)
+        entities = Player.query.all()
         all_players = []
 
         for player in entities:

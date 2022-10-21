@@ -17,7 +17,7 @@ def get_all():
 
 
 @player_view.get('/<int:uid>')
-def get_player_by_id(uid):
+def get_by_id(uid):
     player = storage.get_by_id(uid)
     return player.dict(), 200
 
