@@ -27,7 +27,11 @@ def add_team():
 
 @team_view.get('/')
 def get_all():
-    teams = storage.get_all()
+    name = request.args.get('name')
+    if name:
+        teams = storage.get_by_name(name)
+    else:
+        teams = storage.get_all()
 
     return [team.dict() for team in teams], 200
 
