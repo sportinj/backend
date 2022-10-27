@@ -50,3 +50,14 @@ class OnlineStorage():
             TeamSchema(uid=entity.uid, name=entity.name, description=entity.description)
             for entity in entities
         ]
+
+    def get_by_name(self, name) -> list[TeamSchema]:
+        search = '%{name}%'.format(name=name)
+        entities = Team.query.filter(
+            Team.name.ilike(search),
+        ).all()
+
+        return [
+            TeamSchema(uid=entity.uid, name=entity.name, description=entity.description)
+            for entity in entities
+        ]
