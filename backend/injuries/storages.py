@@ -3,8 +3,8 @@ from datetime import datetime
 from sqlalchemy.exc import IntegrityError
 
 from backend.database import db_session
-from backend.errors import ConflictError
-from backend.models import Injury
+from backend.errors import ConflictError, NotFoundError
+from backend.models import Injury, Player
 
 
 class InjuryStorage:
@@ -32,3 +32,11 @@ class InjuryStorage:
             raise ConflictError(self.name)
 
         return entity
+
+    def get_for_player(self, player_id: int) -> list[Injury]:
+        player = Player.query.get(player_id)
+
+        if not player:
+            raise NotFoundError('players', player_id)
+
+        return player.injuries

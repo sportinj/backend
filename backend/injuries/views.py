@@ -9,6 +9,14 @@ injury_view = Blueprint('injury', __name__)
 storage = InjuryStorage()
 
 
+@injury_view.get('/<int:player_id>/injuries/')
+def get_for_player(player_id: int):
+    entities = storage.get_for_player(player_id)
+    injuries = [Injury.from_orm(entity) for entity in entities]
+
+    return [injury.dict() for injury in injuries], 200
+
+
 @injury_view.post('/<int:player_id>/injuries/')
 def add(player_id: int):
     payload = request.json
