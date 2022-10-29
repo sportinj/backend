@@ -11,6 +11,7 @@ class Player(Base):
     name = Column(String, nullable=False)
     description = Column(String, nullable=False)
     team_id = Column(Integer, ForeignKey('teams.uid'), nullable=False)
+    status = Column(String, nullable=False)
 
     injuries = relationship('Injury')
 

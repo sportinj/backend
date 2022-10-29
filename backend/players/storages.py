@@ -3,17 +3,17 @@ from sqlalchemy.exc import IntegrityError
 from backend.database import db_session
 from backend.errors import ConflictError, NotFoundError
 from backend.models import Player, Team
-from backend.players.schemas import Player as PlayerSchema
 
 
 class OnlineStorage:
     name = 'players'
 
-    def add(self, player: PlayerSchema) -> PlayerSchema:
+    def add(self, name: str, description: str, team_id: int, status: str) -> Player:
         entity = Player(
-            name=player.name,
-            description=player.description,
-            team_id=player.team_id,
+            name=name,
+            description=description,
+            team_id=team_id,
+            status=status,
         )
         try:
             db_session.add(entity)
@@ -21,30 +21,21 @@ class OnlineStorage:
         except IntegrityError:
             raise ConflictError(self.name)
 
-        return PlayerSchema(
-            uid=entity.uid,
-            name=entity.name,
-            description=player.description,
-            team_id=player.team_id,
-        )
+        return entity
 
-    def update(self, uid: int, player: PlayerSchema) -> PlayerSchema:
+    def update(self, uid: int, name: str, description: str, status: str) -> Player:
         entity = Player.query.get(uid)
 
         if not entity:
             raise NotFoundError(self.name, uid)
 
-        entity.name = player.name
-        entity.description = player.description
+        entity.name = name
+        entity.description = description
+        entity.status = status
 
         db_session.commit()
 
-        return PlayerSchema(
-            uid=entity.uid,
-            name=entity.name,
-            description=player.description,
-            team_id=player.team_id,
-        )
+        return entity
 
     def delete(self, uid: int) -> None:
         entity = Player.query.get(uid)
@@ -55,81 +46,32 @@ class OnlineStorage:
         db_session.delete(entity)
         db_session.commit()
 
-    def get_by_id(self, uid: int) -> PlayerSchema:
+    def get_by_id(self, uid: int) -> Player:
         entity = Player.query.get(uid)
 
         if not entity:
             raise NotFoundError(self.name, uid)
 
-        return PlayerSchema(
-            uid=entity.uid,
-            name=entity.name,
-            description=entity.description,
-            team_id=entity.team_id,
-        )
+        return entity
 
-    def get_all(self) -> list[PlayerSchema]:
-        entities = Player.query.all()
-        all_players = []
+    def get_all(self) -> list[Player]:
+        return Player.query.all()
 
-        for player in entities:
-            poi = PlayerSchema(
-                uid=player.uid,
-                name=player.name,
-                description=player.description,
-                team_id=player.team_id,
-            )
-
-            all_players.append(poi)
-
-        return all_players
-
-    def get_for_team(self, uid: int) -> list[PlayerSchema]:
+    def get_for_team(self, uid: int) -> list[Player]:
         team = Team.query.get(uid)
 
         if not team:
             raise NotFoundError('teams', uid)
 
-        entities = team.players
-
-        all_players = []
-
-        for player in entities:
-            poi = PlayerSchema(
-                uid=player.uid,
-                name=player.name,
-                description=player.description,
-                team_id=player.team_id,
-            )
-
-            all_players.append(poi)
-
-        return all_players
+        return team.players
 
     def find_by_name(self, name: str) -> list[Player]:
         search = '{name}%'.format(name=name)
 
         return Player.query.filter(Player.name.ilike(search)).all()
 
-    def find_for_team(self, uid: int, name: str) -> list[PlayerSchema]:
-        entities = Player.query.filter(
+    def find_for_team(self, uid: int, name: str) -> list[Player]:
+        return Player.query.filter(
             Player.team_id == uid,
             Player.name == name,
         ).all()
-
-        target_players = []
-
-        if not entities:
-            raise NotFoundError(name, uid)
-
-        for entity in entities:
-            player = PlayerSchema(
-                uid=entity.uid,
-                name=entity.name,
-                description=entity.description,
-                team_id=entity.team_id,
-            )
-
-            target_players.append(player)
-
-        return target_players
