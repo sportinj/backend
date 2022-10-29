@@ -1,6 +1,7 @@
 from flask import Blueprint, request
 
 from backend.errors import AppError
+from backend.players.schemas import Player
 from backend.players.storages import OnlineStorage as PlayerStorage
 from backend.teams.schemas import Team
 from backend.teams.storages import OnlineStorage
@@ -63,8 +64,9 @@ def delete_team(uid):
 def get_all_players(uid, name=''):
     if 'name' in request.args:
         name = request.args.get('name')
-        players = player_storage.find_for_team(uid, name)
+        entities = player_storage.find_for_team(uid, name)
     else:
-        players = player_storage.get_for_team(uid)
+        entities = player_storage.get_for_team(uid)
+    players = [Player.from_orm(entity) for entity in entities]
 
     return [player.dict() for player in players], 200

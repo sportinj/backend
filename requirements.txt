@@ -4,3 +4,4 @@ mypy==0.982
 wemake-python-styleguide==0.17.0
 sqlalchemy==1.4.41
 psycopg2-binary==2.9.4
+orjson==3.8.1
