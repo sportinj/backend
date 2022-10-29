@@ -106,6 +106,11 @@ class OnlineStorage:
 
         return all_players
 
+    def find_by_name(self, name: str) -> list[Player]:
+        search = '{name}%'.format(name=name)
+
+        return Player.query.filter(Player.name.ilike(search)).all()
+
     def find_for_team(self, uid: int, name: str) -> list[PlayerSchema]:
         entities = Player.query.filter(
             Player.team_id == uid,

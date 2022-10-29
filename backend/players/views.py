@@ -13,7 +13,12 @@ storage = OnlineStorage()
 
 @player_view.get('/')
 def get_all():
-    players = storage.get_all()
+    name = request.args.get('name')
+    if name:
+        entities = storage.find_by_name(name)
+        players = [Player.from_orm(entity) for entity in entities]
+    else:
+        players = storage.get_all()
     return [player.dict() for player in players], 200
 
 
