@@ -3,9 +3,10 @@ from flask import Blueprint, request
 from backend.errors import AppError
 from backend.players.schemas import Player
 from backend.players.storages import OnlineStorage
+from backend.injuries.views import injury_view
 
 player_view = Blueprint('player', __name__)
-
+player_view.register_blueprint(injury_view, url_prefix='')
 
 storage = OnlineStorage()
 
