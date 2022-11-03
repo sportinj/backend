@@ -38,7 +38,7 @@ app.teardown_appcontext(shutdown_session)
 
 def main():
     logger.info('hello, world')
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=80)
 
 
 if __name__ == '__main__':
